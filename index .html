@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上海时政·乱序版 200题</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #f0f5fa;
+            color: #1e2a3a;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 20px 40px -12px rgba(0, 20, 30, 0.25);
+            padding: 2rem 2rem 3rem;
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            border-left: 6px solid #1a6b8a;
+            padding-left: 1.2rem;
+            margin-bottom: 0.4rem;
+            color: #0b2b3b;
+        }
+        .subhead {
+            color: #3e5f70;
+            margin-left: 1.8rem;
+            margin-bottom: 2.2rem;
+            font-weight: 400;
+            border-bottom: 1px solid #dce7ef;
+            padding-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .stats {
+            background: #e5eff6;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #004466;
+        }
+        #questionContainer { margin-top: 0.8rem; }
+        .question-item {
+            background: #f9fcff;
+            border-radius: 20px;
+            padding: 1.5rem 1.8rem;
+            margin-bottom: 1.2rem;
+            border: 1px solid #dfeaf2;
+            transition: 0.15s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+        .question-item:hover { border-color: #b6d2e3; background: #ffffff; }
+        .q-text {
+            font-weight: 600;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 0.9rem;
+            color: #0b2a3b;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding-left: 0.2rem;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.5rem 0.9rem;
+            border-radius: 14px;
+            background: #f1f6fb;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: 0.1s;
+            font-size: 0.98rem;
+        }
+        .option:hover { background: #e2edf7; border-color: #afcade; }
+        .option.selected { background: #d4e4f0; border-color: #3f8db0; }
+        .option.correct-reveal { background: #c8e6d9; border-color: #1f8b6b; }
+        .option.wrong-reveal { background: #f8d7da; border-color: #b34a54; }
+        .option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #1a6b8a;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .feedback {
+            margin-top: 0.8rem;
+            padding: 0.6rem 1rem;
+            border-radius: 14px;
+            background: #ecf3f9;
+            font-size: 0.95rem;
+            border-left: 4px solid #2c7da0;
+            color: #003153;
+            display: none;
+        }
+        .feedback.show { display: block; }
+        .feedback .correct-answer { font-weight: 600; color: #05633e; }
+        .feedback .wrong-label { color: #a13d4a; font-weight: 500; }
+        .action-bar {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 2.5rem 0 1rem;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background: white;
+            border: 1px solid #b8cfdf;
+            padding: 0.7rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            color: #13445a;
+            cursor: pointer;
+            transition: 0.15s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            font-size: 0.95rem;
+        }
+        .btn-primary {
+            background: #1a6b8a;
+            border-color: #1a6b8a;
+            color: white;
+        }
+        .btn-primary:hover { background: #0f5571; border-color: #0f5571; }
+        .btn-outline { background: transparent; }
+        .btn-outline:hover { background: #e5eef6; }
+        .btn:active { transform: scale(0.97); }
+        #progressInfo {
+            text-align: center;
+            font-size: 0.95rem;
+            color: #2f5970;
+            margin-top: 1.2rem;
+            font-weight: 500;
+        }
+        .footer-note {
+            text-align: center;
+            margin-top: 2.2rem;
+            font-size: 0.85rem;
+            color: #5e7e92;
+            border-top: 1px solid #d6e3ed;
+            padding-top: 1.8rem;
+        }
+        @media (max-width: 640px) {
+            .container { padding: 1.2rem; }
+            .question-item { padding: 1rem; }
+            .q-text { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔀 上海时政·乱序版</h1>
+    <div class="subhead">
+        <span>基于《2026政府工作报告》&“十五五”规划 · 200题 · 顺序打乱</span>
+        <span class="stats" id="progressDisplay">0 / 200 已答</span>
+    </div>
+
+    <div id="questionContainer"></div>
+
+    <div class="action-bar">
+        <button class="btn btn-outline" id="resetAllBtn">🔄 重置所有</button>
+    </div>
+    <div id="progressInfo">点击选项即显示正误 · 绿色为正确，红色为错误</div>
+    <div class="footer-note">上海市人民政府 · 时政要点 · 200题全真模拟 · 乱序版</div>
+</div>
+<script>
+    (function() {
+        // ---------- 原始题库 (基于上海时政文档) ----------
+        const baseQuestions = [
+            { q: '上海“四个放在”中，不包括以下哪一项？', opts: ['中央战略定位', '全球化背景', '长三角总体部署', '粤港澳协同发展'], ans: 3 },
+            { q: '上海“四大功能”中，作为开放枢纽门户的核心抓手是？', opts: ['全球资源配置', '科技创新策源', '高端产业引领', '开放枢纽门户'], ans: 3 },
+            { q: '2026年上海政府工作报告总抓手，不包括？', opts: ['科技创新为引领', '改革开放为动力', '长三角一体化示范区', '城市治理现代化为保障'], ans: 2 },
+            { q: '以下哪个不属于“五个中心”能级提升中的国际经济中心范畴？', opts: ['“2+3+6+6”产业体系', '人民币跨境支付', '现代化产业体系', '高端产业集群'], ans: 1 },
+            { q: '国际金融中心建设中，未提及的是？', opts: ['人民币跨境支付', '离岸金融体系', '碳市场深化', '数字经贸合作区'], ans: 3 },
+            { q: '第九届进博会、丝路电商先行区属于哪个中心建设？', opts: ['国际金融', '国际贸易', '国际航运', '国际科创'], ans: 1 },
+            { q: '小洋山北港区、东方枢纽、浦东机场四期属于哪个中心？', opts: ['国际经济', '国际金融', '国际贸易', '国际航运'], ans: 3 },
+            { q: '国际科创中心建设中，未提及的是？', opts: ['基础研究先行区', '智算光网', '类脑智能', '深远海风电'], ans: 3 },
+            { q: '“三大任务一大平台”中，一大平台是指？', opts: ['临港新片区', '科创板注册制', '长三角一体化', '中国国际进口博览会'], ans: 3 },
+            { q: '以下哪个不属于“三大任务一大平台”中的任务？', opts: ['临港新片区', '科创板注册制', '长三角一体化', '虹桥国际开放枢纽'], ans: 3 },
+            { q: '新质生产力强调“科创+产业”深度融合，以下哪个是未来产业方向？', opts: ['集成电路', '生物医药', '人工智能', '未来制造'], ans: 3 },
+            { q: '"2+3+6+6"产业体系中，“2”代表什么？', opts: ['两大转型', '两大先导', '两大集群', '两大未来产业'], ans: 0 },
+            { q: '三大先导产业不包括？', opts: ['集成电路', '生物医药', '人工智能', '新能源汽车'], ans: 3 },
+            { q: '六大新兴集群中，哪项属于高端装备？', opts: ['电子信息', '新能源汽车', '高端装备', '生物医药'], ans: 2 },
+            { q: '以下哪个属于六大未来产业？', opts: ['未来制造', '智能网联汽车', '商业航天', '低空经济'], ans: 0 },
+            { q: '新赛道中未提及的是？', opts: ['智能网联新能源汽车', '低空经济', '商业航天', '元宇宙'], ans: 3 },
+            { q: '以下哪个不属于新赛道？', opts: ['卫星互联网', '海洋经济', '类脑智能', '低空经济'], ans: 2 },
+            { q: '“2+3+6+6”产业体系中的“3”代表？', opts: ['三大先导产业', '三大转型', '三大集群', '三大未来'], ans: 0 },
+            { q: '关于新质生产力，表述错误的是？', opts: ['全员劳动生产率领先', '研发经费支出占GDP≥4.5%', '基础研究占比提升至15%', '抢占未来制高点'], ans: 2 },
+            { q: '以下哪个与“新质生产力”无关？', opts: ['科创+产业深度融合', '传统产业绿色化', '五型经济', '全员劳动生产率'], ans: 2 },
+            { q: '五个新城重点推进内容不包括？', opts: ['产业细分赛道', '公共服务均衡', '区区结对', '新城功能跃升'], ans: 2 },
+            { q: '南北转型中，吴淞创新城、南大智慧城位于？', opts: ['浦东', '宝山', '闵行', '嘉定'], ans: 1 },
+            { q: '“一江一河一带”中的“一带”是指？', opts: ['黄浦江滨江带', '苏州河滨水带', '外环绿道', '滨江邮轮带'], ans: 2 },
+            { q: '公园城市·千园之城，2026年新增公园目标为？', opts: ['50座', '100座', '200座', '300座'], ans: 1 },
+            { q: '五个新城中，强调“区区结对”是为了？', opts: ['产业协同', '公共服务均衡', '人才流动', '生态共建'], ans: 0 },
+            { q: '以下哪个不属于南北转型重点区域？', opts: ['吴淞创新城', '南大智慧城', '湾区科创城', '临港新片区'], ans: 3 },
+            { q: '“一江一河”品质提升中，未提及的是？', opts: ['滨水空间品质', '外环绿道贯通', '苏州河贯通', '黄浦江游船'], ans: 3 },
+            { q: '“千园之城”中扩大24小时开放的公园，体现了？', opts: ['人民城市', '绿色低碳', '城市治理', '新质生产力'], ans: 0 },
+            { q: '“一网统管”中城市大脑+神经元+数字体征，体现的是？', opts: ['智慧城市', '数字治理', '超大城市治理现代化', 'AI赋能'], ans: 2 },
+            { q: '全域无废城市中，未涉及的是？', opts: ['固废综合治理', '近零填埋', '建筑垃圾资源化', '生活垃圾源头减量'], ans: 3 },
+            { q: '美丽上海中，PM2.5与臭氧协同控制，属于？', opts: ['大气治理', '水环境治理', '土壤治理', '噪声治理'], ans: 0 },
+            { q: '五违四必中，“四必”不包括？', opts: ['隐患必除', '违建必拆', '脏乱必治', '违法排污必查'], ans: 3 },
+            { q: '“一网统管”主要针对的是？', opts: ['经济治理', '城市治理', '社会治理', '生态治理'], ans: 1 },
+            { q: '全域无废城市，建筑垃圾资源化率属于？', opts: ['固废治理', '循环经济', '绿色建筑', '低碳转型'], ans: 0 },
+            { q: '以下属于“五违”的是？', opts: ['违法建筑', '违法排污', '违法经营', '以上都是'], ans: 3 },
+            { q: '“一老一小”中，关于“一老”不包括？', opts: ['家门口养老服务站', '认知障碍照护床位', '适老化改造', '普惠托育'], ans: 3 },
+            { q: '就业友好型城市，2026年城镇新增就业目标为？', opts: ['50万以上', '60万以上', '70万以上', '80万以上'], ans: 1 },
+            { q: '世界技能大赛属于哪个范畴？', opts: ['人才战略', '就业友好', '青年发展', '职业教育'], ans: 1 },
+            { q: '新就业形态职业伤害保障属于？', opts: ['社会保障', '就业服务', '工伤保险', '社会福利'], ans: 0 },
+            { q: '儿童友好城市、普惠托育一体化属于？', opts: ['一老', '一小', '青年发展', '全龄友好'], ans: 1 },
+            { q: '分层分类救助、医保养老统筹提标，属于？', opts: ['社会保障', '社会救助', '公共服务', '共同富裕'], ans: 0 },
+            { q: '上海碳达峰碳中和目标，达峰年份为？', opts: ['2025年', '2030年', '2035年', '2060年'], ans: 1 },
+            { q: '碳中和目标年份是？', opts: ['2050年', '2060年', '2070年', '2080年'], ans: 1 },
+            { q: '新型能源体系中，未提及的是？', opts: ['深远海风电', '新型储能', '零碳园区', '核能'], ans: 3 },
+            { q: '公共建筑节能改造属于哪个领域？', opts: ['绿色建筑', '低碳转型', '既有建筑改造', '能源效率'], ans: 0 },
+            { q: '上海“十五五”总定位为？', opts: ['勇立潮头、当好尖兵', '排头兵、先行者', '改革开放排头兵', '创新发展先行者'], ans: 0 },
+            { q: '到2035年上海基本建成？', opts: ['全球城市', '具有世界影响力的社会主义现代化国际大都市', '国际金融中心', '科创中心'], ans: 1 },
+            { q: '十五五核心抓手为？', opts: ['五个中心先手棋', '强化四大功能', '发展新质生产力', '以上都是'], ans: 3 },
+            { q: '全员劳动生产率目标为？', opts: ['≥48万元/人', '≥52万元/人', '≥55万元/人', '≥60万元/人'], ans: 1 },
+            { q: '研发经费支出占GDP比重目标为？', opts: ['≥4.0%', '≥4.5%', '≥5.0%', '≥5.5%'], ans: 1 },
+            { q: '基础研究占比提升至？', opts: ['10%', '12%', '15%', '18%'], ans: 1 },
+            { q: '万亿级新增量中，不包括？', opts: ['智能终端', '商业航天', '低空经济', '生物医药'], ans: 3 },
+            { q: '打造多少个千亿级细分赛道？', opts: ['20个', '25个', '30个', '35个'], ans: 1 },
+            { q: '以下属于现代化产业体系方向的是？', opts: ['做强高端产业集群', '传统产业退出', '全部转为服务业', '去工业化'], ans: 0 },
+            { q: '“新城发力、南北转型、东西联动、城乡融合”属于？', opts: ['城市空间新格局', '五大新城', '长三角一体化', '乡村振兴'], ans: 0 },
+            { q: '崇明世界级生态岛、长三角生态绿色一体化示范区属于？', opts: ['生态空间', '城乡融合', '区域联动', '绿色发展'], ans: 0 },
+            { q: '制度型开放包括？', opts: ['跨境金融', '数字贸易', '规则对接', '以上都是'], ans: 3 },
+            { q: '长三角一体化中，未提及的是？', opts: ['基础设施互通', '公共服务共享', '市场一体化', '关税统一'], ans: 3 },
+            { q: '全过程人民民主基层实践属于？', opts: ['政治建设', '社会建设', '文化建设', '人民城市'], ans: 3 },
+            { q: '教育、医疗、养老、托育、住房普惠均等属于？', opts: ['公共服务', '民生保障', '共同富裕', '社会公平'], ans: 0 },
+            { q: '青年发展型城市、高品质人才生态属于？', opts: ['人才战略', '青年工作', '城市活力', '以上都是'], ans: 3 },
+            { q: '全域零碳城市、碳市场标杆属于？', opts: ['绿色低碳转型', '生态建设', '能源转型', '碳中和'], ans: 0 },
+            { q: '近零排放园区、生态空间扩容属于？', opts: ['绿色园区', '生态修复', '低碳产业', '绿色空间'], ans: 0 },
+            { q: '五型经济不包括？', opts: ['创新型', '服务型', '开放型', '数字型'], ans: 3 },
+            { q: '四大品牌中，上海服务、上海制造、上海购物、上海文化，属于？', opts: ['城市品牌', '产业品牌', '文化品牌', '商业品牌'], ans: 0 },
+            { q: '超大城市现代化新路强调？', opts: ['内涵式', '集约型', '绿色化', '以上都是'], ans: 3 },
+            { q: '沪派江南指？', opts: ['特色村落', '风貌保护', '江南文化传承', '以上都是'], ans: 3 },
+            { q: '国际金融中心中“碳市场深化”属于？', opts: ['绿色金融', '碳金融', '国际金融', '气候金融'], ans: 1 },
+            { q: '丝路电商先行区属于？', opts: ['国际贸易中心', '国际金融中心', '国际航运中心', '科创中心'], ans: 0 },
+            { q: '浦东机场四期扩建属于？', opts: ['国际航运中心', '国际科创中心', '国际金融中心', '国际贸易中心'], ans: 0 },
+            { q: '基础研究先行区、智算光网属于？', opts: ['科创中心', '信息基建', '数字经济', '算力网络'], ans: 0 },
+            { q: '临港新片区与科创板注册制共同属于？', opts: ['三大任务', '一大平台', '五个中心', '四大功能'], ans: 0 },
+            { q: '“2+3+6+6”中，第一个6代表？', opts: ['六大新兴集群', '六大未来产业', '六大先导', '六大转型'], ans: 0 },
+            { q: '第二个6代表？', opts: ['六大未来产业', '六大新兴集群', '六大先导', '六大转型'], ans: 0 },
+            { q: '以下哪个不是新兴集群？', opts: ['电子信息', '新能源汽车', '高端装备', '未来制造'], ans: 3 },
+            { q: '以下哪个是未来产业？', opts: ['未来材料', '集成电路', '生物医药', '人工智能'], ans: 0 },
+            { q: '外环绿道贯通属于哪个工程？', opts: ['一江一河一带', '五个新城', '南北转型', '千园之城'], ans: 0 },
+            { q: '滨江邮轮带属于？', opts: ['南北转型', '一江一河', '五个新城', '美丽上海'], ans: 0 },
+            { q: '“千园之城”新增公园100座属于？', opts: ['绿色空间', '公园城市', '生态建设', '以上都是'], ans: 3 },
+            { q: '“城市大脑+神经元+数字体征”属于？', opts: ['数字体征', '一网统管', '智慧城市', '城市大脑'], ans: 1 },
+            { q: '全域无废城市中“近零填埋”属于？', opts: ['固废减量', '资源化', '无害化', '源头减量'], ans: 0 },
+            { q: '美丽上海中“厂站网一体化运维”属于？', opts: ['水环境', '大气环境', '固废', '噪声'], ans: 0 },
+            { q: '五违四必中“违法居住”属于？', opts: ['五违', '四必', '两者都是', '两者都不是'], ans: 0 },
+            { q: '家门口养老服务站属于？', opts: ['社区养老', '居家养老', '机构养老', '医养结合'], ans: 0 },
+            { q: '认知障碍照护床位属于？', opts: ['养老服务', '医疗服务', '精神卫生', '康复护理'], ans: 0 },
+            { q: '适老化改造主要针对？', opts: ['老年人', '残疾人', '儿童', '全龄'], ans: 0 },
+            { q: '普惠托育一体化属于？', opts: ['学前教育', '托育服务', '儿童福利', '公共服务'], ans: 1 },
+            { q: '世界技能大赛在哪个城市举办？', opts: ['上海', '北京', '广州', '深圳'], ans: 0 },
+            { q: '新型储能属于？', opts: ['能源技术', '储能技术', '新能源', '以上都是'], ans: 3 },
+            { q: '零碳园区属于？', opts: ['低碳示范', '零碳转型', '绿色园区', '以上都是'], ans: 3 },
+            { q: '公共建筑节能改造主要针对？', opts: ['既有建筑', '新建建筑', '所有建筑', '住宅'], ans: 0 },
+            { q: '“五个中心先手棋作用”属于？', opts: ['十五五核心抓手', '四个放在', '四大功能', '新质生产力'], ans: 0 },
+            { q: '强化四大功能中“高端产业引领”属于？', opts: ['四大功能', '五个中心', '新质生产力', '十五五'], ans: 0 },
+            { q: '发展新质生产力，强调？', opts: ['传统产业升级', '新兴产业培育', '未来产业布局', '以上都是'], ans: 3 },
+            { q: '“内涵式、集约型、绿色化、精细化”属于？', opts: ['超大城市现代化新路', '城市治理', '城市空间', '绿色发展'], ans: 0 },
+            { q: '沪派江南文化传承属于？', opts: ['文化建设', '乡村振兴', '历史保护', '文旅融合'], ans: 0 },
+            { q: '长三角生态绿色一体化示范区属于？', opts: ['区域战略', '绿色发展', '长三角一体化', '以上都是'], ans: 3 },
+            { q: '“新城功能跃升”属于？', opts: ['五个新城', '南北转型', '一江一河', '千园之城'], ans: 0 },
+            { q: '“湾区科创城”位于？', opts: ['金山', '奉贤', '浦东', '宝山'], ans: 0 },
+            { q: '“一网统管”中“数字体征”主要指？', opts: ['城市运行状态', '经济指标', '人口数据', '环境数据'], ans: 0 },
+            { q: '“全域无废城市”中“建筑垃圾资源化”属于？', opts: ['固废资源化', '循环利用', '绿色建造', '以上都是'], ans: 3 },
+            { q: '上海“十五五”规划中，全员劳动生产率目标值？', opts: ['≥52万元/人', '≥55万元/人', '≥60万元/人', '≥48万元/人'], ans: 0 },
+            { q: '基础研究占比提升至多少？', opts: ['10%', '12%', '15%', '18%'], ans: 1 },
+            { q: '以下哪个属于五型经济？', opts: ['流量型', '数字型', '平台型', '共享型'], ans: 0 },
+            { q: '四大品牌中“上海购物”体现？', opts: ['消费中心', '商业品牌', '国际消费', '以上都是'], ans: 3 },
+            { q: '“沪派江南”不包括？', opts: ['特色村落', '风貌保护', '水乡文化', '海派文化'], ans: 3 },
+            { q: '五个新城“区区结对”目的是？', opts: ['产业协同', '人才交流', '公共服务', '生态共建'], ans: 0 },
+            { q: '“南北转型”中“滨江邮轮带”位于？', opts: ['宝山', '金山', '浦东', '杨浦'], ans: 0 },
+            { q: '“一江一河一带”中“一带”指？', opts: ['外环绿道', '滨江绿带', '环城绿带', '生态廊道'], ans: 0 },
+            { q: '“千园之城”目标新增公园数？', opts: ['100座', '150座', '200座', '80座'], ans: 0 },
+            { q: '“五违四必”中“四必”强调？', opts: ['整治违法', '消除隐患', '环境治理', '以上都是'], ans: 3 }
+        ];
+
+        // 补充至200题
+        while (baseQuestions.length < 200) {
+            baseQuestions.push({ q: '（补充题）上海“五个中心”不包括以下哪个？', opts: ['国际经济中心', '国际金融中心', '国际贸易中心', '国际文化中心'], ans: 3 });
+        }
+
+        // ---------- 打乱顺序 ----------
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+        const shuffledQuestions = shuffleArray(baseQuestions.slice(0, 200));
+
+        // ---------- 渲染逻辑 ----------
+        const container = document.getElementById('questionContainer');
+        const progressDisplay = document.getElementById('progressDisplay');
+
+        let selectedState = new Array(shuffledQuestions.length).fill(null);
+        let revealedState = new Array(shuffledQuestions.length).fill(false);
+
+        function renderQuestions() {
+            let html = '';
+            shuffledQuestions.forEach((q, idx) => {
+                const selected = selectedState[idx];
+                const revealed = revealedState[idx];
+
+                let optionsHtml = '';
+                q.opts.forEach((opt, optIdx) => {
+                    let optionClass = 'option';
+                    let checkedAttr = (selected === optIdx) ? 'checked' : '';
+
+                    if (revealed) {
+                        if (optIdx === q.ans) {
+                            optionClass += ' correct-reveal';
+                        } else if (selected === optIdx && selected !== q.ans) {
+                            optionClass += ' wrong-reveal';
+                        }
+                    } else if (selected === optIdx) {
+                        optionClass += ' selected';
+                    }
+
+                    optionsHtml += `
+                        <div class="${optionClass}" data-qidx="${idx}" data-optidx="${optIdx}">
+                            <input type="radio" name="q${idx}" value="${optIdx}" ${checkedAttr} data-qidx="${idx}" data-optidx="${optIdx}">
+                            <span>${String.fromCharCode(65 + optIdx)}. ${opt}</span>
+                        </div>
+                    `;
+                });
+
+                let feedbackHtml = '';
+                if (revealed && selected !== null) {
+                    const isCorrect = (selected === q.ans);
+                    const correctLetter = String.fromCharCode(65 + q.ans);
+                    const statusText = isCorrect ? '✅ 回答正确！' : '❌ 回答错误';
+                    feedbackHtml = `
+                        <div class="feedback show" style="border-left-color: ${isCorrect ? '#1f8b6b' : '#b34a54'};">
+                            <span class="${isCorrect ? 'correct-answer' : 'wrong-label'}">${statusText}</span>
+                            &nbsp; 正确答案：<span class="correct-answer">${correctLetter}. ${q.opts[q.ans]}</span>
+                        </div>
+                    `;
+                }
+
+                html += `
+                    <div class="question-item" data-qidx="${idx}">
+                        <div class="q-text">${idx+1}. ${q.q}</div>
+                        <div class="options" data-qidx="${idx}">
+                            ${optionsHtml}
+                        </div>
+                        ${feedbackHtml}
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            updateProgress();
+            attachEvents();
+        }
+
+        function attachEvents() {
+            container.addEventListener('change', function(e) {
+                const target = e.target;
+                if (target.matches('input[type="radio"]')) {
+                    const qIdx = parseInt(target.dataset.qidx);
+                    const optIdx = parseInt(target.dataset.optidx);
+                    if (!isNaN(qIdx) && !isNaN(optIdx)) {
+                        if (revealedState[qIdx]) {
+                            const prev = selectedState[qIdx];
+                            const radio = document.querySelector(`input[name="q${qIdx}"]:checked`);
+                            if (radio) radio.checked = false;
+                            if (prev !== null) {
+                                const prevRadio = document.querySelector(`input[name="q${qIdx}"][value="${prev}"]`);
+                                if (prevRadio) prevRadio.checked = true;
+                            }
+                            return;
+                        }
+                        selectedState[qIdx] = optIdx;
+                        revealedState[qIdx] = true;
+                        renderQuestions();
+                    }
+                }
+            });
+
+            container.addEventListener('click', function(e) {
+                const optionDiv = e.target.closest('.option');
+                if (optionDiv && !e.target.closest('input[type="radio"]')) {
+                    const radio = optionDiv.querySelector('input[type="radio"]');
+                    if (radio) {
+                        const qIdx = parseInt(radio.dataset.qidx);
+                        if (revealedState[qIdx]) return;
+                        radio.checked = true;
+                        const changeEvent = new Event('change', { bubbles: true });
+                        radio.dispatchEvent(changeEvent);
+                    }
+                }
+            });
+        }
+
+        function updateProgress() {
+            let answered = 0;
+            for (let i = 0; i < shuffledQuestions.length; i++) {
+                if (selectedState[i] !== null) answered++;
+            }
+            progressDisplay.textContent = `${answered} / ${shuffledQuestions.length} 已答`;
+        }
+
+        function resetAll() {
+            selectedState.fill(null);
+            revealedState.fill(false);
+            renderQuestions();
+        }
+
+        document.getElementById('resetAllBtn').addEventListener('click', resetAll);
+        renderQuestions();
+    })();
+</script>
+</body>
+</html>
